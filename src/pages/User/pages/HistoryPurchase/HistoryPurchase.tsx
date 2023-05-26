@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import classNames from 'classnames'
 import { createSearchParams, Link } from 'react-router-dom'
+
 import purchaseApi from 'src/apis/purchase.api'
 import path from 'src/constants/path'
 import { purchasesStatus } from 'src/constants/purchase'
@@ -19,6 +20,7 @@ const purchaseTabs = [
 
 export default function HistoryPurchase() {
   const queryParams: { status?: string } = useQueryParams()
+
   const status: number = Number(queryParams.status) || purchasesStatus.all
 
   const { data: purchasesInCartData } = useQuery({
@@ -33,9 +35,7 @@ export default function HistoryPurchase() {
       key={tab.status}
       to={{
         pathname: path.historyPurchase,
-        search: createSearchParams({
-          status: String(tab.status)
-        }).toString()
+        search: createSearchParams({ status: String(tab.status) }).toString()
       }}
       className={classNames('flex flex-1 items-center justify-center border-b-2 bg-white py-4 text-center', {
         'border-b-orange text-orange': status === tab.status,

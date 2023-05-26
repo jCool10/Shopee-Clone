@@ -1,5 +1,6 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
+
 import HOME_EN from 'src/locales/en/home.json'
 import PRODUCT_EN from 'src/locales/en/product.json'
 import HOME_VI from 'src/locales/vi/home.json'

@@ -1,31 +1,27 @@
 import { useQuery } from '@tanstack/react-query'
 import { Helmet } from 'react-helmet-async'
+
 import categoryApi from 'src/apis/category.api'
 import productApi from 'src/apis/product.api'
-import Pagination from 'src/components/Pagination'
+import { Pagination } from 'src/components'
 import useQueryConfig from 'src/hooks/useQueryConfig'
 import { ProductListConfig } from 'src/types/product.type'
-import AsideFilter from './components/AsideFilter'
-import Product from './components/Product/Product'
-import SortProductList from './components/SortProductList'
+
+import { AsideFilter, Product, SortProductList } from './components'
 
 export default function ProductList() {
   const queryConfig = useQueryConfig()
 
   const { data: productsData } = useQuery({
     queryKey: ['products', queryConfig],
-    queryFn: () => {
-      return productApi.getProducts(queryConfig as ProductListConfig)
-    },
+    queryFn: () => productApi.getProducts(queryConfig as ProductListConfig),
     keepPreviousData: true,
     staleTime: 3 * 60 * 1000
   })
 
   const { data: categoriesData } = useQuery({
     queryKey: ['categories'],
-    queryFn: () => {
-      return categoryApi.getCategories()
-    }
+    queryFn: () => categoryApi.getCategories()
   })
 
   return (

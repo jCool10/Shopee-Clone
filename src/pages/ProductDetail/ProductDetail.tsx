@@ -1,51 +1,56 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import DOMPurify from 'dompurify'
+import { convert } from 'html-to-text'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { Helmet } from 'react-helmet-async'
+import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
+
 import productApi from 'src/apis/product.api'
 import purchaseApi from 'src/apis/purchase.api'
-import { toast } from 'react-toastify'
-import ProductRating from 'src/components/ProductRating'
-import QuantityController from 'src/components/QuantityController'
+import { ProductRating, QuantityController } from 'src/components'
+import path from 'src/constants/path'
 import { purchasesStatus } from 'src/constants/purchase'
 import { Product as ProductType, ProductListConfig } from 'src/types/product.type'
 import { formatCurrency, formatNumberToSocialStyle, getIdFromNameId, rateSale } from 'src/utils/utils'
+
 import Product from '../ProductList/components/Product'
-import path from 'src/constants/path'
-import { useTranslation } from 'react-i18next'
-import { Helmet } from 'react-helmet-async'
-import { convert } from 'html-to-text'
 
 export default function ProductDetail() {
   const { t } = useTranslation(['product'])
   const queryClient = useQueryClient()
-  const [buyCount, setBuyCount] = useState(1)
+  const navigate = useNavigate()
   const { nameId } = useParams()
+
+  const [buyCount, setBuyCount] = useState(1)
+  const [currentIndexImages, setCurrentIndexImages] = useState([0, 5])
+  const [activeImage, setActiveImage] = useState('')
+
+  const imageRef = useRef<HTMLImageElement>(null)
+
   const id = getIdFromNameId(nameId as string)
+
   const { data: productDetailData } = useQuery({
     queryKey: ['product', id],
     queryFn: () => productApi.getProductDetail(id as string)
   })
-  const [currentIndexImages, setCurrentIndexImages] = useState([0, 5])
-  const [activeImage, setActiveImage] = useState('')
+
   const product = productDetailData?.data.data
-  const imageRef = useRef<HTMLImageElement>(null)
+
   const currentImages = useMemo(
     () => (product ? product.images.slice(...currentIndexImages) : []),
     [product, currentIndexImages]
   )
+
   const queryConfig: ProductListConfig = { limit: '20', page: '1', category: product?.category._id }
 
   const { data: productsData } = useQuery({
     queryKey: ['products', queryConfig],
-    queryFn: () => {
-      return productApi.getProducts(queryConfig)
-    },
+    queryFn: () => productApi.getProducts(queryConfig),
     staleTime: 3 * 60 * 1000,
     enabled: Boolean(product)
   })
-  const addToCartMutation = useMutation(purchaseApi.addToCart)
-  const navigate = useNavigate()
 
   useEffect(() => {
     if (product && product.images.length > 0) {
@@ -96,6 +101,8 @@ export default function ProductDetail() {
   const handleBuyCount = (value: number) => {
     setBuyCount(value)
   }
+
+  const addToCartMutation = useMutation(purchaseApi.addToCart)
 
   const addToCart = () => {
     addToCartMutation.mutate(

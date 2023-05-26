@@ -1,8 +1,9 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Fragment, useContext, useEffect, useMemo, useState } from 'react'
-import { useForm, Controller, FormProvider, useFormContext } from 'react-hook-form'
+import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { toast } from 'react-toastify'
+
 import userApi from 'src/apis/user.api'
 import Button from 'src/components/Button'
 import Input from 'src/components/Input'
@@ -11,8 +12,9 @@ import InputNumber from 'src/components/InputNumber'
 import { AppContext } from 'src/contexts/app.context'
 import { ErrorResponse } from 'src/types/utils.type'
 import { setProfileToLS } from 'src/utils/auth'
-import { userSchema, UserSchema } from 'src/utils/rules'
+import { UserSchema, userSchema } from 'src/utils/rules'
 import { getAvatarUrl, isAxiosUnprocessableEntityError } from 'src/utils/utils'
+
 import DateSelect from '../../components/DateSelect'
 
 function Info() {

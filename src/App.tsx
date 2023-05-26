@@ -1,9 +1,11 @@
-import useRouteElements from './useRouteElements'
+import { useContext, useEffect } from 'react'
 import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import { useEffect, useContext } from 'react'
-import { LocalStorageEventTarget } from './utils/auth'
+
 import { AppContext } from './contexts/app.context'
+import { LocalStorageEventTarget } from './utils/auth'
+import useRouteElements from './useRouteElements'
+
+import 'react-toastify/dist/ReactToastify.css'
 
 function App() {
   const routeElements = useRouteElements()

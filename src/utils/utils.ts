@@ -1,7 +1,8 @@
 import axios, { AxiosError } from 'axios'
+
+import userImage from 'src/assets/images/user.svg'
 import config from 'src/constants/config'
 import HttpStatusCode from 'src/constants/httpStatusCode.enum'
-import userImage from 'src/assets/images/user.svg'
 import { ErrorResponse } from 'src/types/utils.type'
 
 export function isAxiosError<T>(error: unknown): error is AxiosError<T> {

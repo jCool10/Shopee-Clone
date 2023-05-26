@@ -1,6 +1,6 @@
-import type { RegisterOptions, UseFormGetValues } from 'react-hook-form'
 import * as yup from 'yup'
 import { AnyObject } from 'yup/lib/types'
+import type { RegisterOptions, UseFormGetValues } from 'react-hook-form'
 
 type Rules = { [key in 'email' | 'password' | 'confirm_password']?: RegisterOptions }
 

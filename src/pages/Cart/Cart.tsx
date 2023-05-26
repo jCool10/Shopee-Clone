@@ -1,24 +1,22 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import React, { useContext, useEffect, useMemo } from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import purchaseApi from 'src/apis/purchase.api'
-import Button from 'src/components/Button'
-import QuantityController from 'src/components/QuantityController'
-import path from 'src/constants/path'
-import { purchasesStatus } from 'src/constants/purchase'
-import { Purchase } from 'src/types/purchase.type'
-import { formatCurrency, generateNameId } from 'src/utils/utils'
 import produce from 'immer'
 import keyBy from 'lodash/keyBy'
+import React, { useContext, useEffect, useMemo } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { AppContext } from 'src/contexts/app.context'
+
+import purchaseApi from 'src/apis/purchase.api'
 import noproduct from 'src/assets/images/no-product.png'
+import { Button, QuantityController } from 'src/components'
+import path from 'src/constants/path'
+import { purchasesStatus } from 'src/constants/purchase'
+import { AppContext } from 'src/contexts/app.context'
+import { Purchase } from 'src/types/purchase.type'
+import { formatCurrency, generateNameId } from 'src/utils/utils'
 
 export default function Cart() {
   const { extendedPurchases, setExtendedPurchases } = useContext(AppContext)
   const location = useLocation()
-  const isAllChecked = useMemo(() => extendedPurchases.every((purchase) => purchase.checked), [extendedPurchases])
-  const checkedPurchases = useMemo(() => extendedPurchases.filter((purchase) => purchase.checked), [extendedPurchases])
 
   const { data: purchasesInCartData, refetch } = useQuery({
     queryKey: ['purchases', { status: purchasesStatus.inCart }],
@@ -42,6 +40,7 @@ export default function Cart() {
       })
     }
   })
+
   const deletePurchasesMutation = useMutation({
     mutationFn: purchaseApi.deletePurchase,
     onSuccess: () => {
@@ -49,19 +48,22 @@ export default function Cart() {
     }
   })
 
+  const isAllChecked = useMemo(() => extendedPurchases.every((purchase) => purchase.checked), [extendedPurchases])
+
+  const checkedPurchases = useMemo(() => extendedPurchases.filter((purchase) => purchase.checked), [extendedPurchases])
+
   const totalCheckedPurchasePrice = useMemo(
-    () =>
-      checkedPurchases.reduce((result, current) => {
-        return result + current.product.price * current.buy_count
-      }, 0),
+    () => checkedPurchases.reduce((result, current) => result + current.product.price * current.buy_count, 0),
     [checkedPurchases]
   )
 
   const totalCheckedPurchaseSavingPrice = useMemo(
     () =>
-      checkedPurchases.reduce((result, current) => {
-        return result + (current.product.price_before_discount - current.product.price) * current.buy_count
-      }, 0),
+      checkedPurchases.reduce(
+        (result, current) =>
+          result + (current.product.price_before_discount - current.product.price) * current.buy_count,
+        0
+      ),
     [checkedPurchases]
   )
 
@@ -75,6 +77,7 @@ export default function Cart() {
       return (
         purchasesInCart?.map((purchase) => {
           const isChoosenPurchaseFromLocation = choosenPurchaseIdFromLocation === purchase._id
+
           return {
             ...purchase,
             disabled: false,
@@ -83,7 +86,7 @@ export default function Cart() {
         }) || []
       )
     })
-  }, [purchasesInCart, choosenPurchaseIdFromLocation])
+  }, [purchasesInCart, choosenPurchaseIdFromLocation, setExtendedPurchases])
 
   useEffect(() => {
     return () => {
@@ -100,12 +103,7 @@ export default function Cart() {
   }
 
   const handleCheckAll = () => {
-    setExtendedPurchases((prev) =>
-      prev.map((purchase) => ({
-        ...purchase,
-        checked: !isAllChecked
-      }))
-    )
+    setExtendedPurchases((prev) => prev.map((purchase) => ({ ...purchase, checked: !isAllChecked })))
   }
 
   const handleTypeQuantity = (purchaseIndex: number) => (value: number) => {

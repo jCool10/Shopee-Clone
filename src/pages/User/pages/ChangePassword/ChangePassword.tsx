@@ -3,11 +3,12 @@ import { useMutation } from '@tanstack/react-query'
 import omit from 'lodash/omit'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
+
 import userApi from 'src/apis/user.api'
 import Button from 'src/components/Button'
 import Input from 'src/components/Input'
 import { ErrorResponse } from 'src/types/utils.type'
-import { userSchema, UserSchema } from 'src/utils/rules'
+import { UserSchema, userSchema } from 'src/utils/rules'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 
 type FormData = Pick<UserSchema, 'password' | 'new_password' | 'confirm_password'>
@@ -28,6 +29,7 @@ export default function ChangePassword() {
     },
     resolver: yupResolver(passwordSchema)
   })
+
   const updateProfileMutation = useMutation(userApi.updateProfile)
 
   const onSubmit = handleSubmit(async (data) => {

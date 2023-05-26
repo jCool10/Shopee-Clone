@@ -1,22 +1,17 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation } from '@tanstack/react-query'
-// Không có tính năng tree-shaking
-// import { omit } from 'lodash'
-
-// Import chỉ mỗi function omit
 import omit from 'lodash/omit'
-
-import { schema, Schema } from 'src/utils/rules'
-import Input from 'src/components/Input'
-import authApi from 'src/apis/auth.api'
-import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
-import { ErrorResponse } from 'src/types/utils.type'
 import { useContext } from 'react'
-import { AppContext } from 'src/contexts/app.context'
-import Button from 'src/components/Button'
 import { Helmet } from 'react-helmet-async'
+import { useForm } from 'react-hook-form'
+import { Link, useNavigate } from 'react-router-dom'
+
+import authApi from 'src/apis/auth.api'
+import { Button, Input } from 'src/components'
+import { AppContext } from 'src/contexts/app.context'
+import { ErrorResponse } from 'src/types/utils.type'
+import { Schema, schema } from 'src/utils/rules'
+import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 
 type FormData = Pick<Schema, 'email' | 'password' | 'confirm_password'>
 const registerSchema = schema.pick(['email', 'password', 'confirm_password'])
@@ -24,6 +19,7 @@ const registerSchema = schema.pick(['email', 'password', 'confirm_password'])
 export default function Register() {
   const { setIsAuthenticated, setProfile } = useContext(AppContext)
   const navigate = useNavigate()
+
   const {
     register,
     handleSubmit,
@@ -32,9 +28,11 @@ export default function Register() {
   } = useForm<FormData>({
     resolver: yupResolver(registerSchema)
   })
+
   const registerAccountMutation = useMutation({
     mutationFn: (body: Omit<FormData, 'confirm_password'>) => authApi.registerAccount(body)
   })
+
   const onSubmit = handleSubmit((data) => {
     const body = omit(data, ['confirm_password'])
     registerAccountMutation.mutate(body, {
