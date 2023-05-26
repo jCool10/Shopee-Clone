@@ -16,16 +16,22 @@ import noproduct from 'src/assets/images/no-product.png'
 
 export default function Cart() {
   const { extendedPurchases, setExtendedPurchases } = useContext(AppContext)
+  const location = useLocation()
+  const isAllChecked = useMemo(() => extendedPurchases.every((purchase) => purchase.checked), [extendedPurchases])
+  const checkedPurchases = useMemo(() => extendedPurchases.filter((purchase) => purchase.checked), [extendedPurchases])
+
   const { data: purchasesInCartData, refetch } = useQuery({
     queryKey: ['purchases', { status: purchasesStatus.inCart }],
     queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart })
   })
+
   const updatePurchaseMutation = useMutation({
     mutationFn: purchaseApi.updatePurchase,
     onSuccess: () => {
       refetch()
     }
   })
+
   const buyProductsMutation = useMutation({
     mutationFn: purchaseApi.buyProducts,
     onSuccess: (data) => {
@@ -42,12 +48,7 @@ export default function Cart() {
       refetch()
     }
   })
-  const location = useLocation()
-  const choosenPurchaseIdFromLocation = (location.state as { purchaseId: string } | null)?.purchaseId
-  const purchasesInCart = purchasesInCartData?.data.data
-  const isAllChecked = useMemo(() => extendedPurchases.every((purchase) => purchase.checked), [extendedPurchases])
-  const checkedPurchases = useMemo(() => extendedPurchases.filter((purchase) => purchase.checked), [extendedPurchases])
-  const checkedPurchasesCount = checkedPurchases.length
+
   const totalCheckedPurchasePrice = useMemo(
     () =>
       checkedPurchases.reduce((result, current) => {
@@ -55,6 +56,7 @@ export default function Cart() {
       }, 0),
     [checkedPurchases]
   )
+
   const totalCheckedPurchaseSavingPrice = useMemo(
     () =>
       checkedPurchases.reduce((result, current) => {
@@ -62,6 +64,10 @@ export default function Cart() {
       }, 0),
     [checkedPurchases]
   )
+
+  const choosenPurchaseIdFromLocation = (location.state as { purchaseId: string } | null)?.purchaseId
+  const purchasesInCart = purchasesInCartData?.data.data
+  const checkedPurchasesCount = checkedPurchases.length
 
   useEffect(() => {
     setExtendedPurchases((prev) => {
